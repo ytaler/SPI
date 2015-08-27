@@ -1,3 +1,5 @@
 # SPI
 Pruebas de comunicación usando SPI
-Se dividió en dos ramas el repo, Tx y Rx. 
+El repositorio está dividido en dos:
+Tx: https://github.com/ytaler/SPI/tree/TX
+Rx: https://github.com/ytaler/SPI/tree/RX
