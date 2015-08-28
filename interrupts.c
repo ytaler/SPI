@@ -14,12 +14,16 @@
 
 #include <stdint.h>         /* For uint8_t definition */
 #include <stdbool.h>        /* For true/false definition */
+#include "user.h"
 
 #endif
 
 /******************************************************************************/
 /* Interrupt Routines                                                         */
 /******************************************************************************/
+
+static unsigned char LED_Display=1;  // 8-bit variable
+static LEDDirections Direccion = IZQ2DER;
 
 /* High-priority service */
 
@@ -33,33 +37,24 @@ void high_isr(void)
 #error "Invalid compiler selection for implemented ISR routines"
 #endif
 
-{
+{  
+    // Check for INT0 interrupt
+    if (INTCONbits.INT0IF)
+    {
+        // clear (reset) flag
+        INTCONbits.INT0IF = 0;
 
-      /* This code stub shows general interrupt handling.  Note that these
-      conditional statements are not handled within 3 seperate if blocks.
-      Do not use a seperate if block for each interrupt flag to avoid run
-      time errors. */
-
-#if 0
-    
-      /* TODO Add High Priority interrupt routine code here. */
-
-      /* Determine which flag generated the interrupt */
-      if(<Interrupt Flag 1>)
-      {
-          <Interrupt Flag 1=0>; /* Clear Interrupt Flag 1 */
-      }
-      else if (<Interrupt Flag 2>)
-      {
-          <Interrupt Flag 2=0>; /* Clear Interrupt Flag 2 */
-      }
-      else
-      {
-          /* Unhandled interrupts */
-      }
-
-#endif
-
+        // change directions
+        if (Direccion == IZQ2DER)
+        {
+            Direccion = DER2IZQ;     // change direction
+        }
+        else // (Direction == RIGHT2LEFT)
+        {
+            Direccion = IZQ2DER;     // change direction
+        }
+        
+    }
 }
 
 /* Low-priority interrupt routine */
@@ -73,30 +68,29 @@ void low_isr(void)
 #error "Invalid compiler selection for implemented ISR routines"
 #endif
 {
+    // Check for Timer0 Interrupt
+    if  (INTCONbits.TMR0IF)
+    {
+        INTCONbits.TMR0IF = 0;          // clear (reset) flag
 
-      /* This code stub shows general interrupt handling.  Note that these
-      conditional statements are not handled within 3 seperate if blocks.
-      Do not use a seperate if block for each interrupt flag to avoid run
-      time errors. */
+        // Take an ADC conversion and use it to set Timer0
+        TMR0H = 0b00010000;
+        TMR0L = 0;                  // LSB = 0
 
-#if 0
-
-      /* TODO Add Low Priority interrupt routine code here. */
-
-      /* Determine which flag generated the interrupt */
-      if(<Interrupt Flag 1>)
-      {
-          <Interrupt Flag 1=0>; /* Clear Interrupt Flag 1 */
-      }
-      else if (<Interrupt Flag 2>)
-      {
-          <Interrupt Flag 2=0>; /* Clear Interrupt Flag 2 */
-      }
-      else
-      {
-          /* Unhandled interrupts */
-      }
-
-#endif
-
+        // update display variable
+        if (Direccion == IZQ2DER)
+        {
+            LED_Display <<= 1;          // rotate display by 1 from 0 to 7
+            if (LED_Display == 0)
+                LED_Display = 1;        // rotated bit out, so set bit 0
+        }
+        else // (Direction == RIGHT2LEFT)
+        {
+            LED_Display >>= 1;          // rotate display by 1 from 7 to 0
+            if (LED_Display == 0)
+                LED_Display = 0x80;     // rotated bit out, so set bit 7
+        }
+        PORTD=LED_Display;
+        SpiTxRx(LED_Display);
+    }
 }

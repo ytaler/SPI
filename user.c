@@ -59,13 +59,26 @@ void InitApp(void)
     
     // Configure the IPEN bit (1=on) in RCON to turn on/off int priorities
     // Interrupciones
-    GIE=0; // Deshabilitadas
-    
+    // Set up Interrupts for timer
     INTCONbits.TMR0IF = 0;          // clear roll-over interrupt flag
+    INTCON2bits.TMR0IP = 0;         // Timer0 is low priority interrupt
+    INTCONbits.TMR0IE = 1;          // enable the Timer0 interrupt.
+    // Set up timer itself
     T0CON = 0b00000001;             // prescale 1:4 - about 1 second maximum delay.
     TMR0H = 0;                      // clear timer - always write upper byte first
     TMR0L = 0;
-    T0CONbits.TMR0ON = 1;           // start timer
+    T0CONbits.TMR0ON = 1;           // start timer    
+    
+    // Set up switch interrupt on INT0
+    INTCON2bits.INTEDG0 = 0;    // interrupt on falling edge of INT0 (switch pressed)
+    INTCONbits.INT0IF = 0;      // ensure flag is cleared
+    INTCONbits.INT0IE = 1;      // enable INT0 interrupt
+    // NOTE: INT0 is ALWAYS a high priority interrupt
+
+    // Set up global interrupts
+    RCONbits.IPEN = 1;          // Enable priority levels on interrupts
+    INTCONbits.GIEL = 1;        // Low priority interrupts allowed
+    INTCONbits.GIEH = 1;        // Interrupting enabled.   
 }
 
 // Funcion que envia y recibe los datos por SPI
