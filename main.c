@@ -38,15 +38,6 @@ void main(void)
     
     while(1)
     {
-        PORTD = SpiTxRx(0xFF);
-        do
-            ;
-        while (INTCONbits.TMR0IF == 0); // Ciclo bobo de espera
-        
-        // Tiempo completado
-        INTCONbits.TMR0IF = 0; // Borramos bandera
-        // Establecemos el valor inicial del contador del tmr0
-        TMR0H = 0b00100000; // MSB
-        TMR0L = 0b00000000; // LSB = 0
+        Sleep();
     }
 }

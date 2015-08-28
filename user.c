@@ -60,13 +60,12 @@ void InitApp(void)
     SSPM2=1;
     // Configure the IPEN bit (1=on) in RCON to turn on/off int priorities
     // Interrupciones
-    GIE=0; // Deshabilitadas
-    
-    INTCONbits.TMR0IF = 0;          // clear roll-over interrupt flag
-    T0CON = 0b00000001;             // prescale 1:4 - about 1 second maximum delay.
-    TMR0H = 0;                      // clear timer - always write upper byte first
-    TMR0L = 0;
-    T0CONbits.TMR0ON = 1;           // start timer
+    SSPIE=1; // Master Synchronous Serial Port Interrupt Enable bit
+    SSPIP=1; // Master Synchronous Serial Port Interrupt Priority bit
+    // Set up global interrupts
+    RCONbits.IPEN = 1;          // Enable priority levels on interrupts
+    INTCONbits.GIEL = 1;        // Low priority interrupts allowed
+    INTCONbits.GIEH = 1;        // Interrupting enabled.   
 }
 
 // Funcion que envia y recibe los datos por SPI
