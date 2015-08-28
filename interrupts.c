@@ -34,9 +34,10 @@ void high_isr(void)
 #endif
 
 {
-    if(SSPIF){
-        SSPIF=0;
-        PORTD=SSPBUF;
+    // Verificamos interrupcion por SPI
+    if(PIR1bits.SSPIF){
+        PIR1bits.SSPIF = 0; // borramos la bandera de irq
+        PORTD=SSPBUF; // Escribimos el valor recibido.
     }
 }
 

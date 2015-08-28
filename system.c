@@ -22,6 +22,7 @@
 /* Refer to the device datasheet for information about available
 oscillator configurations. */
 void ConfigureOscillator(void){
+    // ¡¡¡¡¡ SI SE CAMBIA LA FRECUENCIA CAMBIAR DEFINICION EN SYSTEM.H !!!!
     OSCCON=0b01011100; // 01011100 = 0x5C
     // bit 7 IDLEN: Idle Enable bit --> 0 dispositivo entra en modo bajo consumo con instruccion sleep
     // bit 6-4 IRCF<2:0>: Internal Oscillator Frequency Select bits --> 101 frecuencia de 4 MHz
